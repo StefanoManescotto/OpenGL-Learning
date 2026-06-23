@@ -11,8 +11,10 @@ find_package(glm REQUIRED)
 add_executable(${PROJECT_NAME}
         src/main.cpp
         src/glad.c
-        include/utilities.cpp
+        src/utilities.cpp
         include/utilities.h
+        src/shader.cpp
+        include/shader.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
