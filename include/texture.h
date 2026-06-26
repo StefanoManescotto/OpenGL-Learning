@@ -6,8 +6,8 @@
 #define GFXENGINE_TEXTURE_H
 
 #include <string>
-#include <libraries/stb_image.h>
-#include <glad/glad.h>
+#include <thirdparty/stb_image.h>
+#include <thirdparty/glad/glad.h>
 
 class Texture {
 public:
