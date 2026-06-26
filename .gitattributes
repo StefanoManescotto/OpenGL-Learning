@@ -2,5 +2,4 @@
 include/thirdparty/** linguist-vendored
 src/glad.c linguist-vendored
 
-# Optional: If you ever add external assets like shaders or textures
 resources/** linguist-documentation
