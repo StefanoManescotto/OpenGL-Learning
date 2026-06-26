@@ -16,8 +16,6 @@
 class Shader {
 public:
     // the program ID
-    unsigned int ID;
-
     Shader(const std::string& vertexPath, const std::string& fragmentPath);
 
     // use/activate the shader
@@ -29,6 +27,7 @@ public:
     void setFloat(const std::string &name, float value) const;
 
 private:
+    unsigned int ID;
     static std::string readShaderSource(const std::string& filePath);
 };
 

@@ -15,6 +15,8 @@ add_executable(${PROJECT_NAME}
         include/utilities.h
         src/shader.cpp
         include/shader.h
+        src/texture.cpp
+        include/texture.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -30,4 +32,8 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
         SHADER_DIR="${CMAKE_SOURCE_DIR}/shaders/"
+)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+        RESOURCES_DIR="${CMAKE_SOURCE_DIR}/resources/"
 )
