@@ -9,21 +9,20 @@
 #include <iostream>
 #include <ostream>
 
-Texture::Texture(const std::string &texturePath, const std::string &pathRoot, GLenum wrapS, GLenum wrapT,
-    GLenum minFilter, GLenum magFilter) {
+Texture::Texture(const std::string &texturePath, const TextureConfig &config) {
     glGenTextures(1, &ID);
     glBindTexture(GL_TEXTURE_2D, ID);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapS);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, minFilter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, magFilter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, config.wrapS);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, config.wrapT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, config.minFilter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, config.magFilter);
 
     // load and generate the texture
     int width, height, nrChannels;
-    unsigned char *data = stbi_load((pathRoot + texturePath).c_str(), &width, &height, &nrChannels, 0);
+    unsigned char *data = stbi_load((config.rootPath + texturePath).c_str(), &width, &height, &nrChannels, 0);
     if (data) {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, config.internalFormat, width, height, 0, config.format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     } else {
         std::cout << "Failed to load texture" << std::endl;

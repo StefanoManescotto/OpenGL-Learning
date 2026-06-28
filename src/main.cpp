@@ -1,4 +1,5 @@
 #include <cmath>
+#include <format>
 #include <thirdparty/glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
@@ -60,6 +61,11 @@ int main() {
         -0.5,   0.5, 0.0f,  0.7f, 0.7f, 0.9f,  0.0f, 0.0f
    };
 
+    unsigned int pIndices[] = {
+        0,1,2,
+        1,2,3
+    };
+
     // float vertices[] = {
     //     -0.5f, -0.5f, 0.0f,
     //     0.5f, -0.5f, 0.0f,
@@ -73,20 +79,15 @@ int main() {
     //     0.0f, 0.0f,  1.0f,
     //     0.7f, 0.7f,  0.9f
     // };
-
-    unsigned int pIndices[] = {
-        0,1,2,
-        1,2,3
-    };
-
-    float texCoords[] = {
-        0.0f, 0.0f,  // lower-left corner
-        1.0f, 0.0f,  // lower-right corner
-        0.5f, 1.0f   // top-center corner
-    };
+    // float texCoords[] = {
+    //     0.0f, 0.0f,  // lower-left corner
+    //     1.0f, 0.0f,  // lower-right corner
+    //     0.5f, 1.0f   // top-center corner
+    // };
 
     Shader myShader = Shader(std::string(SHADER_DIR) + "shader.vert", std::string(SHADER_DIR) + "shader.frag");
-    Texture myTexture = Texture("wall.jpg");
+    Texture wallTexture = Texture("wall.jpg");
+    Texture catTexture = Texture("awesomeface.png");
 
     glGenBuffers(1, &VBO_Points);
     // glGenBuffers(1, &VBO_Col);
@@ -98,6 +99,11 @@ int main() {
 
     // glBindBuffer(GL_ARRAY_BUFFER, VBO_Col);
     // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glActiveTexture(GL_TEXTURE0);
+    wallTexture.bind();
+    glActiveTexture(GL_TEXTURE1);
+    catTexture.bind();
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_Points);
@@ -118,6 +124,9 @@ int main() {
 
     float timeValue = .0f;
     // Main Render Loop
+    myShader.use();
+    myShader.setInt("texture1", 0);
+    myShader.setInt("texture2", 1);
     while (!glfwWindowShouldClose(window)) {
         timeValue = static_cast<float>(glfwGetTime());
         float greenValue = (sin(timeValue) + 1.0f) / 2.0f;
@@ -131,10 +140,9 @@ int main() {
 
         // render
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe mode
-        myShader.use();
         myShader.setFloat("changingColor", greenValue);
 
-        myTexture.bind();
+        // wallTexture.bind();
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
         glBindVertexArray(0);
