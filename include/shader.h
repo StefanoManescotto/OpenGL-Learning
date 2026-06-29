@@ -25,6 +25,9 @@ public:
     void setBool(const std::string &name, bool value) const;
     void setInt(const std::string &name, int value) const;
     void setFloat(const std::string &name, float value) const;
+    bool getBool(const std::string &name) const;
+    int getInt(const std::string &name) const;
+    float getFloat(const std::string &name) const;
 
 private:
     unsigned int ID;

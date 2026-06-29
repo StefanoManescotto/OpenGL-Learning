@@ -72,6 +72,33 @@ void Shader::setFloat(const std::string &name, float value) const {
     glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
 }
 
+bool Shader::getBool(const std::string &name) const {
+    GLint v;
+    GLint location = glGetUniformLocation(ID, name.c_str());
+    if (location != -1) {
+        glGetUniformiv(ID, location, &v);
+    }
+    return static_cast<bool>(v);
+}
+
+int Shader::getInt(const std::string &name) const {
+    GLint v;
+    GLint location = glGetUniformLocation(ID, name.c_str());
+    if (location != -1) {
+        glGetUniformiv(ID, location, &v);
+    }
+    return v;
+}
+
+float Shader::getFloat(const std::string &name) const {
+    GLfloat v;
+    GLint location = glGetUniformLocation(ID, name.c_str());
+    if (location != -1) {
+        glGetUniformfv(ID, location, &v);
+    }
+    return v;
+}
+
 std::string Shader::readShaderSource(const std::string &filePath) {
     std::ifstream shaderFile;
     shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);

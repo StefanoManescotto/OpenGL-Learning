@@ -4,8 +4,9 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <math.h>
-#include <shader.h>
+#include <algorithm>
 
+#include <shader.h>
 #include "texture.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -13,9 +14,17 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow* window) {
+void processInput(GLFWwindow* window, Shader shader) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+        float newValue = std::clamp(shader.getFloat("mixValue") + .01f, 0.0f, 1.0f);
+        shader.setFloat("mixValue", newValue);
+    }else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+        float newValue = std::clamp(shader.getFloat("mixValue") - .01f, 0.0f, 1.0f);
+        shader.setFloat("mixValue", newValue);
     }
 }
 
@@ -136,7 +145,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         // input
-        processInput(window);
+        processInput(window, myShader);
 
         // render
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe mode
