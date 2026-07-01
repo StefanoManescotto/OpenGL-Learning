@@ -9,9 +9,10 @@ out vec3 vertexColor;
 out vec2 texCoord;
 
 uniform float changingColor;
+uniform mat4 transf;
 
 void main() {
-    gl_Position = vec4(aPos, 1.0);
+    gl_Position = transf * vec4(aPos, 1.0);
     vertexColor = aCol;
 
 //    if(gl_VertexID == 0){

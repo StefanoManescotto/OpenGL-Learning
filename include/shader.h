@@ -29,6 +29,8 @@ public:
     int getInt(const std::string &name) const;
     float getFloat(const std::string &name) const;
 
+    unsigned int getID() const;
+
 private:
     unsigned int ID;
     static std::string readShaderSource(const std::string& filePath);

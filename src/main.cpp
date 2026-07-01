@@ -6,8 +6,13 @@
 #include <math.h>
 #include <algorithm>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+
 #include <shader.h>
-#include "texture.h"
+#include <texture.h>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     // std::cout << "Resized window to: " << width << " - " << height << std::endl;
@@ -57,8 +62,6 @@ int main() {
 
     glViewport(0, 0, 800, 600);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-
 
     unsigned int VBO_Points, /*VBO_Col,*/ VAO, EBO;
 
@@ -131,14 +134,25 @@ int main() {
 
     glBindVertexArray(0);
 
+    unsigned int transformLoc = glGetUniformLocation(myShader.getID(), "transf");
+    glm::mat4 transf = glm::mat4(1.0f);
+    // transf = glm::rotate(transf, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    // transf = glm::scale(transf, glm::vec3(0.5f, 0.5f, 0.5f));
     float timeValue = .0f;
     // Main Render Loop
     myShader.use();
     myShader.setInt("texture1", 0);
     myShader.setInt("texture2", 1);
+
     while (!glfwWindowShouldClose(window)) {
         timeValue = static_cast<float>(glfwGetTime());
         float greenValue = (sin(timeValue) + 1.0f) / 2.0f;
+
+        transf = glm::mat4(1.0f);
+        transf = glm::rotate(transf, (float)glfwGetTime() * .5f, glm::vec3(0.0f, 0.0f, 1.0f));
+        transf = glm::translate(transf, glm::vec3(0.5f, 0.2f, 1.0f));
+        transf = glm::scale(transf, glm::vec3(0.5f, 0.5f, 0.5f));
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
 
         // Clear screen with a nice slate blue color
         glClearColor(0.1f, 0.2f, 0.3f, 1.0f);

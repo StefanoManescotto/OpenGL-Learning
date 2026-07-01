@@ -99,6 +99,10 @@ float Shader::getFloat(const std::string &name) const {
     return v;
 }
 
+unsigned int Shader::getID() const {
+    return ID;
+}
+
 std::string Shader::readShaderSource(const std::string &filePath) {
     std::ifstream shaderFile;
     shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
