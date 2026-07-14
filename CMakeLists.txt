@@ -17,6 +17,7 @@ add_executable(${PROJECT_NAME}
         include/shader.h
         src/texture.cpp
         include/texture.h
+        include/geometry.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

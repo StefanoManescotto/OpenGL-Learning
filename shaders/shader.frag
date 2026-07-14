@@ -10,7 +10,7 @@ uniform sampler2D myTexture;
 uniform sampler2D texture1;
 uniform sampler2D texture2;
 
-uniform float mixValue = .2f;
+uniform float mixValue = .0f;
 
 void main() {
 //    FragColor = vec4(vertexColor, 1.0f);

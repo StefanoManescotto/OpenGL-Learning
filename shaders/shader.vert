@@ -11,12 +11,18 @@ out vec2 texCoord;
 uniform float changingColor;
 uniform mat4 transf;
 
+// transformation matrices
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
+
 void main() {
-    gl_Position = transf * vec4(aPos, 1.0);
-    vertexColor = aCol;
+    gl_Position = projection * view * model * transf * vec4(aPos, 1.0);
+//    vertexColor = aCol;
 
 //    if(gl_VertexID == 0){
-        vertexColor = vec3(aCol.r, changingColor, aCol.b);
+//        vertexColor = vec3(aCol.r, changingColor, aCol.b);
 //    }
 
     // -- Texture --
