@@ -16,6 +16,59 @@
 #include <geometry.h>
 
 
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
+glm::vec3 cameraPos   = glm::vec3(0.0f, 0.0f,  3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp    = glm::vec3(0.0f, 1.0f,  0.0f);
+
+float fov = 45.0f;
+float lastX = 400, lastY = 300;
+float yaw = -90.0f, pitch;
+bool firstMouse = true;
+
+void mouseCallback(GLFWwindow* window, double xpos, double ypos) {
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xOffset = xpos - lastX;
+    float yOffset = lastY - ypos;
+
+    lastX = xpos;
+    lastY = ypos;
+
+    const float sensitivity = .1f;
+    xOffset *= sensitivity;
+    yOffset *= sensitivity;
+
+    yaw += xOffset;
+    pitch += yOffset;
+
+    if (pitch > 89.0f) {
+        pitch = 89.0f;
+    }
+    if(pitch < -89.0f) {
+        pitch = -89.0f;
+    }
+
+    cameraFront.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront.y = sin(glm::radians(pitch));
+    cameraFront.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+    cameraFront = glm::normalize(cameraFront);
+}
+
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset) {
+    fov -= (float)yoffset;
+    if (fov < 1.0f)
+        fov = 1.0f;
+    if (fov > 45.0f)
+        fov = 45.0f;
+}
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     // std::cout << "Resized window to: " << width << " - " << height << std::endl;
     glViewport(0, 0, width, height);
@@ -33,6 +86,17 @@ void processInput(GLFWwindow* window, Shader shader) {
         float newValue = std::clamp(shader.getFloat("mixValue") - .01f, 0.0f, 1.0f);
         shader.setFloat("mixValue", newValue);
     }
+
+    // Camera controls
+    const float cameraSpeed = 2.5 * deltaTime;
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        cameraPos += cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        cameraPos -= cameraSpeed * cameraFront;
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 int main() {
@@ -115,7 +179,6 @@ int main() {
     glm::mat4 transf = glm::mat4(1.0f);
     // transf = glm::rotate(transf, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     // transf = glm::scale(transf, glm::vec3(0.5f, 0.5f, 0.5f));
-    float timeValue = .0f;
     // Main Render Loop
     myShader.use();
     myShader.setInt("texture1", 0);
@@ -126,19 +189,22 @@ int main() {
     // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(model));
 
     // View matrix
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+    glm::mat4 view;
 
     // Perspective Projection matrix
     glm::mat4 projection;
-    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
 
     glEnable(GL_DEPTH_TEST);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouseCallback);
+    glfwSetScrollCallback(window, scrollCallback);
 
     while (!glfwWindowShouldClose(window)) {
-        timeValue = static_cast<float>(glfwGetTime());
-        float greenValue = (sin(timeValue) + 1.0f) / 2.0f;
+        auto currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
 
+        // float greenValue = (sin(currentFrame) + 1.0f) / 2.0f;
         // transf = glm::mat4(1.0f);
         // transf = glm::rotate(transf, (float)glfwGetTime() * .5f, glm::vec3(0.0f, 0.0f, 1.0f));
         // transf = glm::translate(transf, glm::vec3(0.2f, 0.2f, 0.0f));
@@ -146,6 +212,11 @@ int main() {
         // // transf = glm::scale(transf, glm::vec3(0.5f, 0.5f, 0.5f));
         // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transf));
 
+        // input
+        processInput(window, myShader);
+        view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+        projection = glm::perspective(glm::radians(fov), 800.0f / 600.0f, 0.1f, 100.0f);
         int modelLoc = glGetUniformLocation(myShader.getID(), "model");
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
         int viewLoc = glGetUniformLocation(myShader.getID(), "view");
@@ -157,16 +228,12 @@ int main() {
         glClearColor(0.1f, 0.2f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // input
-        processInput(window, myShader);
-
         // render
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe mode
-        myShader.setFloat("changingColor", greenValue);
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe mode
+        // myShader.setFloat("changingColor", greenValue);
 
         // wallTexture.bind();
         glBindVertexArray(VAO);
-
         for (unsigned int i = 0; i < 10; i++) {
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);

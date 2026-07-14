@@ -22,7 +22,7 @@ void main() {
 //    vertexColor = aCol;
 
 //    if(gl_VertexID == 0){
-//        vertexColor = vec3(aCol.r, changingColor, aCol.b);
+//        vertexColor = vec3(0, changingColor, 0);
 //    }
 
     // -- Texture --
