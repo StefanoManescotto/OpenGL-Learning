@@ -18,6 +18,8 @@ add_executable(${PROJECT_NAME}
         src/texture.cpp
         include/texture.h
         include/geometry.h
+        src/camera.cpp
+        include/camera.h
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE

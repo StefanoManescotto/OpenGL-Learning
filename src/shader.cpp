@@ -4,6 +4,8 @@
 
 #include "../include/shader.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
 Shader::Shader(const std::string& vertexPath, const std::string& fragmentPath) {
     std::string vertexCode = readShaderSource(vertexPath);
     std::string fragmentCode = readShaderSource(fragmentPath);
@@ -70,6 +72,14 @@ void Shader::setInt(const std::string &name, int value) const {
 
 void Shader::setFloat(const std::string &name, float value) const {
     glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+}
+
+void Shader::setMat4f(const std::string &name, glm::mat4 value) const {
+    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));
+}
+
+void Shader::setVet3f(const std::string &name, float n1, float n2, float n3) const {
+    glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, glm::value_ptr(glm::vec3(n1, n2, n3)));
 }
 
 bool Shader::getBool(const std::string &name) const {
