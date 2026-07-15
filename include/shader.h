@@ -28,6 +28,8 @@ public:
     void setFloat(const std::string &name, float value) const;
     void setMat4f(const std::string &name, glm::mat4 value) const;
     void setVet3f(const std::string &name, float n1, float n2, float n3) const;
+    void setVet3f(const std::string &name, glm::vec3 value) const;
+
     bool getBool(const std::string &name) const;
     int getInt(const std::string &name) const;
     float getFloat(const std::string &name) const;

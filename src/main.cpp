@@ -179,7 +179,8 @@ int main() {
 
     myShader.setVet3f("objectColor", 1.0f, 0.5f, 0.31f);
     myShader.setVet3f("lightColor",  1.0f, 1.0f, 1.0f);
-    myShader.setVet3f("lightPos",  lightPos.x, lightPos.y, lightPos.z);
+    myShader.setVet3f("lightPos",  lightPos);
+    myShader.setVet3f("viewPos", myCamera.getPosition());
 
     glm::mat4 model = glm::mat4(1.0f);
     // model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -208,6 +209,7 @@ int main() {
 
         myShader.use();
         myShader.setMat4f("model", model);
+        myShader.setVet3f("viewPos", myCamera.getPosition());
         myCamera.updateMatrices(myShader);
 
         // Clear screen with a nice slate blue color

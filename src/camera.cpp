@@ -44,8 +44,12 @@ void Camera::setSensitivity(float sensitivity) {
         this->sensitivity = sensitivity;
 }
 
-float Camera::getFov() {
+float Camera::getFov() const {
     return fov;
+}
+
+glm::vec3 Camera::getPosition() const {
+    return cameraPos;
 }
 
 void Camera::moveCamera(const cameraMovement movementType, float deltaTime) {

@@ -50,7 +50,8 @@ public:
     void setFarPlane(float farPlane);
     void setSensitivity(float sensitivity);
 
-    float getFov();
+    float getFov() const;
+    glm::vec3 getPosition() const;
 
     void moveCamera(cameraMovement movementType, float deltaTime);
     void rotateCamera(float xOffset, float yOffset);
