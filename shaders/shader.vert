@@ -7,7 +7,7 @@ layout (location = 2) in vec2 aTexCoord;
 layout (location = 3) in vec3 aNormal;
 
 out vec3 vertexColor;
-out vec2 texCoord;
+out vec2 TexCoord;
 out vec3 Normal;
 out vec3 FragPos;
 
@@ -31,5 +31,5 @@ void main() {
 //    }
 
     // -- Texture --
-//    texCoord = aTexCoord;
+    TexCoord = aTexCoord;
 }

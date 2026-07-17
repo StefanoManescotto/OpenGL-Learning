@@ -113,15 +113,15 @@ int main() {
 
     // float vertices[180] = cubeVertices;
 
-    unsigned int pIndices[] = {
-        0,1,3,
-        1,2,3
-    };
+    // unsigned int pIndices[] = {
+    //     0,1,3,
+    //     1,2,3
+    // };
 
     Shader myShader = Shader(std::string(SHADER_DIR) + "shader.vert", std::string(SHADER_DIR) + "shader.frag");
     Shader lightShader = Shader(std::string(SHADER_DIR) + "lightShader.vert", std::string(SHADER_DIR) + "lightShader.frag");
-    Texture wallTexture = Texture("wall.jpg");
-    Texture catTexture = Texture("awesomeface.png");
+    Texture containerTex = Texture("container2.png");
+    Texture containerSpecTex = Texture("container2_specular.png");
 
     glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
@@ -136,23 +136,25 @@ int main() {
 
     glBindVertexArray(lightVAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_Points);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     // glBindBuffer(GL_ARRAY_BUFFER, VBO_Col);
     // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glActiveTexture(GL_TEXTURE0);
-    wallTexture.bind();
+    containerTex.bind();
     glActiveTexture(GL_TEXTURE1);
-    catTexture.bind();
+    containerSpecTex.bind();
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO_Points);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(3);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     // glBindBuffer(GL_ARRAY_BUFFER, VBO_Col);
 
@@ -168,19 +170,31 @@ int main() {
 
     glBindVertexArray(0);
 
-    unsigned int transformLoc = glGetUniformLocation(myShader.getID(), "transf");
-    glm::mat4 transf = glm::mat4(1.0f);
+    // unsigned int transformLoc = glGetUniformLocation(myShader.getID(), "transf");
+    // glm::mat4 transf = glm::mat4(1.0f);
     // transf = glm::rotate(transf, glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     // transf = glm::scale(transf, glm::vec3(0.5f, 0.5f, 0.5f));
     // Main Render Loop
     myShader.use();
-    myShader.setInt("texture1", 0);
-    myShader.setInt("texture2", 1);
+    // myShader.setInt("texture1", 0);
+    // myShader.setInt("texture2", 1);
+    myShader.setInt("material.diffuse", 0);
+    myShader.setInt("material.specular", 1);
 
-    myShader.setVet3f("objectColor", 1.0f, 0.5f, 0.31f);
-    myShader.setVet3f("lightColor",  1.0f, 1.0f, 1.0f);
-    myShader.setVet3f("lightPos",  lightPos);
-    myShader.setVet3f("viewPos", myCamera.getPosition());
+    // myShader.setVet3f("objectColor", 1.0f, 0.5f, 0.31f);
+    // myShader.setVet3f("lightColor",  1.0f, 1.0f, 1.0f);
+    // myShader.setVet3f("lightPos",  lightPos);
+    myShader.setVec3f("viewPos", myCamera.getPosition());
+
+    // myShader.setVec3f("material.ambient", 1.0f, 0.5f, 0.31f);
+    // myShader.setVec3f("material.diffuse", 1.0f, 0.5f, 0.31f);
+    myShader.setVec3f("material.specular", 0.5f, 0.5f, 0.5f);
+    myShader.setFloat("material.shininess", 32.0f);
+
+    myShader.setVec3f("light.ambient",  0.2f, 0.2f, 0.2f);
+    myShader.setVec3f("light.diffuse",  0.5f, 0.5f, 0.5f); // darken diffuse light a bit
+    myShader.setVec3f("light.specular", 1.0f, 1.0f, 1.0f);
+    myShader.setVec3f("light.position", lightPos);
 
     glm::mat4 model = glm::mat4(1.0f);
     // model = glm::rotate(model, glm::radians(-55.0f), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -207,9 +221,19 @@ int main() {
         // input
         processInput(window, myShader);
 
+        glm::vec3 lightColor = glm::vec3(1.0f);
+        // lightColor.x = sin(glfwGetTime() * 2.0f);
+        // lightColor.y = sin(glfwGetTime() * 0.7f);
+        // lightColor.z = sin(glfwGetTime() * 1.3f);
+
+        glm::vec3 diffuseColor = lightColor   * glm::vec3(0.5f);
+        glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f);
+
         myShader.use();
         myShader.setMat4f("model", model);
-        myShader.setVet3f("viewPos", myCamera.getPosition());
+        myShader.setVec3f("viewPos", myCamera.getPosition());
+        myShader.setVec3f("light.ambient", ambientColor);
+        myShader.setVec3f("light.diffuse", diffuseColor);
         myCamera.updateMatrices(myShader);
 
         // Clear screen with a nice slate blue color
@@ -242,6 +266,7 @@ int main() {
         model = glm::translate(model, lightPos);
         model = glm::scale(model, glm::vec3(0.2f));
         lightShader.setMat4f("model", model);
+        lightShader.setVec3f("lightColor", lightColor);
         // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(model));
         glBindVertexArray(lightVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
